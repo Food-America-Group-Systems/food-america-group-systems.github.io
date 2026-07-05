@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Food America Group Systems, LLC</title>
+<style>
+  :root{
+    --bg-1:#0f1115;
+    --bg-2:#1a1d24;
+    --card:rgba(255,255,255,.05);
+    --ink:#f4f1ea;
+    --sub:#9a9fab;
+    --accent:#ff8a3d;
+  }
+  *{ box-sizing:border-box; }
+  html,body{
+    margin:0;
+    height:100%;
+    overflow:hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+    background:
+      radial-gradient(circle at 20% 15%, #2a2d38 0%, transparent 45%),
+      radial-gradient(circle at 85% 80%, #241f2b 0%, transparent 50%),
+      linear-gradient(160deg, var(--bg-1), var(--bg-2));
+    color: var(--ink);
+    cursor:none;
+  }
+
+  .hero{
+    position:fixed;
+    top:0; left:0; right:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    padding: 8vh 20px 0;
+    z-index:10;
+    pointer-events:none;
+  }
+  .badge{
+    background: var(--card);
+    border:1px solid rgba(255,255,255,.08);
+    backdrop-filter: blur(14px);
+    border-radius:20px;
+    padding: 22px 28px;
+    max-width:560px;
+  }
+  .badge h1{
+    margin:0 0 8px;
+    font-size: clamp(20px, 4vw, 30px);
+    font-weight:600;
+    letter-spacing:-.01em;
+  }
+  .badge .message{
+    margin:0;
+    font-size: clamp(15px, 2.6vw, 18px);
+    font-weight:500;
+    color: var(--accent);
+  }
+  .counter{
+    position:fixed;
+    bottom:22px;
+    left:0; right:0;
+    text-align:center;
+    font-size:12px;
+    color: var(--sub);
+    letter-spacing:.03em;
+    z-index:10;
+    pointer-events:none;
+  }
+  .counter span{ color: var(--ink); font-weight:600; }
+
+  .donut{
+    position:fixed;
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    background:#e8b273;
+    border:4px solid #2b1808;
+    box-shadow: 0 8px 0 rgba(0,0,0,.18);
+    transition: left .42s cubic-bezier(.34,1.56,.64,1), top .42s cubic-bezier(.34,1.56,.64,1);
+    z-index:5;
+    overflow:hidden;
+  }
+  .donut::before{
+    content:"";
+    position:absolute;
+    inset:-1px;
+    background:#ff6f91;
+    clip-path: polygon(
+      0% 46%, 8% 56%, 16% 43%, 24% 58%, 32% 45%,
+      40% 60%, 48% 46%, 56% 61%, 64% 46%, 72% 58%,
+      80% 43%, 88% 56%, 96% 45%, 100% 48%, 100% 0%, 0% 0%
+    );
+    z-index:0;
+  }
+  .donut::after{
+    content:"";
+    position:absolute;
+    top:50%; left:50%;
+    width:38px; height:38px;
+    background: var(--bg-1);
+    border:3px solid #2b1808;
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+    z-index:3;
+  }
+  .donut .eye{
+    position:absolute;
+    width:8px; height:8px;
+    background:#2b1808;
+    border-radius:50%;
+    top:80px;
+    z-index:4;
+  }
+  .donut .eye.left{ left:29px; }
+  .donut .eye.right{ left:52px; }
+  .donut .mouth{
+    position:absolute;
+    left:33px; top:90px;
+    width:22px; height:12px;
+    border-bottom:3px solid #2b1808;
+    border-radius:0 0 50% 50%;
+    z-index:4;
+  }
+  .donut .sprinkle{
+    position:absolute;
+    width:12px; height:4px;
+    border-radius:2px;
+    border:1.5px solid #2b1808;
+    z-index:1;
+  }
+  .donut.dodge{ animation: wiggle .42s ease; }
+  @keyframes wiggle{
+    0%{ transform: rotate(0deg) scale(1); }
+    30%{ transform: rotate(-13deg) scale(1.05); }
+    60%{ transform: rotate(9deg) scale(.97); }
+    100%{ transform: rotate(0deg) scale(1); }
+  }
+
+  .donut-hole{
+    position:fixed;
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:#e8b273;
+    border:3px solid #2b1808;
+    box-shadow: 0 5px 0 rgba(0,0,0,.18);
+    pointer-events:none;
+    z-index:20;
+  }
+  .donut-hole .eye{
+    position:absolute;
+    width:3.5px; height:3.5px;
+    background:#2b1808;
+    border-radius:50%;
+    top:16px;
+    z-index:2;
+  }
+  .donut-hole .eye.left{ left:12px; }
+  .donut-hole .eye.right{ left:24px; }
+</style>
+</head>
+<body>
+  <div class="hero">
+    <div class="badge">
+      <h1>Food America Group Systems, LLC</h1>
+      <p class="message">Fill the hole to open the site.</p>
+    </div>
+  </div>
+
+  <div class="donut" id="donut">
+    <span class="eye left"></span>
+    <span class="eye right"></span>
+    <span class="mouth"></span>
+  </div>
+  <div class="donut-hole" id="donutHole">
+    <span class="eye left"></span>
+    <span class="eye right"></span>
+  </div>
+
+  <p class="counter">Dodges: <span id="attempts">0</span></p>
+
+<script>
+(function(){
+  const donut = document.getElementById('donut');
+  const hole = document.getElementById('donutHole');
+  const attemptsEl = document.getElementById('attempts');
+
+  const FLEE_DISTANCE = 130;
+  const sprinkleColors = ['#ffd166','#6ee7b7','#7dd3fc','#ffffff','#c4b5fd'];
+
+  let fleeCount = 0;
+  let isFleeing = false;
+
+  function scatterSprinkles(){
+    const size = donut.clientWidth;
+    for(let i=0;i<9;i++){
+      const s = document.createElement('span');
+      s.className = 'sprinkle';
+      s.style.background = sprinkleColors[i % sprinkleColors.length];
+      const cx = 14 + Math.random()*(size-28) - 6;
+      const cy = 8 + Math.random()*(size*0.42);
+      s.style.left = cx+'px';
+      s.style.top = cy+'px';
+      s.style.transform = 'rotate('+Math.floor(Math.random()*360)+'deg)';
+      donut.appendChild(s);
+    }
+  }
+
+  function randomPosition(){
+    const dSize = donut.offsetWidth;
+    const maxX = Math.max(10, window.innerWidth - dSize - 10);
+    const maxY = Math.max(10, window.innerHeight - dSize - 10);
+    return { x: 5 + Math.random()*maxX, y: 5 + Math.random()*maxY };
+  }
+
+  function placeDonut(x,y){
+    donut.style.left = x+'px';
+    donut.style.top = y+'px';
+  }
+
+  function centerDonut(){
+    placeDonut(window.innerWidth/2 - donut.offsetWidth/2, window.innerHeight/2 - donut.offsetHeight/2);
+  }
+
+  function moveHoleTo(clientX, clientY){
+    hole.style.left = (clientX - hole.offsetWidth/2) + 'px';
+    hole.style.top = (clientY - hole.offsetHeight/2) + 'px';
+    checkDistance();
+  }
+
+  function checkDistance(){
+    const dRect = donut.getBoundingClientRect();
+    const hRect = hole.getBoundingClientRect();
+    const dCenter = { x: dRect.left + dRect.width/2, y: dRect.top + dRect.height/2 };
+    const hCenter = { x: hRect.left + hRect.width/2, y: hRect.top + hRect.height/2 };
+    const dist = Math.hypot(dCenter.x - hCenter.x, dCenter.y - hCenter.y);
+    if(dist < FLEE_DISTANCE && !isFleeing) flee();
+  }
+
+  function flee(){
+    isFleeing = true;
+    fleeCount++;
+    attemptsEl.textContent = fleeCount;
+
+    const pos = randomPosition();
+    donut.classList.add('dodge');
+    placeDonut(pos.x, pos.y);
+
+    setTimeout(function(){
+      donut.classList.remove('dodge');
+      isFleeing = false;
+    }, 420);
+  }
+
+  window.addEventListener('mousemove', function(e){
+    moveHoleTo(e.clientX, e.clientY);
+  });
+  window.addEventListener('touchmove', function(e){
+    const t = e.touches[0];
+    if(t) moveHoleTo(t.clientX, t.clientY);
+    e.preventDefault();
+  }, { passive:false });
+  window.addEventListener('touchstart', function(e){
+    const t = e.touches[0];
+    if(t) moveHoleTo(t.clientX, t.clientY);
+  });
+  window.addEventListener('resize', function(){
+    if(!isFleeing) centerDonut();
+  });
+
+  scatterSprinkles();
+  centerDonut();
+})();
+</script>
+</body>
+</html>
